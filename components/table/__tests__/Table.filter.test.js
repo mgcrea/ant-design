@@ -43,7 +43,7 @@ describe('Table.filter', () => {
   ];
 
   const longData = [];
-  for(let i = 0; i < 100; i += 1) {
+  for (let i = 0; i < 100; i += 1) {
     longData.push({
       key: i.toString(),
       name: 'name',
@@ -275,6 +275,41 @@ describe('Table.filter', () => {
     );
 
     expect(wrapper.find('tbody tr').length).toBe(1);
+    wrapper.setProps({
+      columns: [
+        {
+          ...column,
+          filteredValue: null,
+        },
+      ],
+    });
+    expect(wrapper.find('tbody tr').length).toBe(4);
+  });
+
+  it('can read defaults from defaultFilteredValue', () => {
+    const wrapper = mount(
+      createTable({
+        columns: [
+          {
+            ...column,
+            defaultFilteredValue: ['Lucy'],
+          },
+        ],
+      }),
+    );
+
+    expect(wrapper.find('tbody tr').length).toBe(1);
+
+    wrapper.setProps({
+      columns: [
+        {
+          ...column,
+          defaultFilteredValue: [],
+        },
+      ],
+    });
+    expect(wrapper.find('tbody tr').length).toBe(1);
+
     wrapper.setProps({
       columns: [
         {
@@ -854,11 +889,13 @@ describe('Table.filter', () => {
 
   it('should reset pagination after filter', () => {
     const handleChange = jest.fn();
-    const wrapper = mount(createTable({
-      onChange: handleChange,
-      dataSource: longData,
-      pagination: true,
-    }));
+    const wrapper = mount(
+      createTable({
+        onChange: handleChange,
+        dataSource: longData,
+        pagination: true,
+      }),
+    );
     const dropdownWrapper = getDropdownWrapper(wrapper);
 
     dropdownWrapper
@@ -883,13 +920,15 @@ describe('Table.filter', () => {
 
   it('should keep pagination current after filter', () => {
     const handleChange = jest.fn();
-    const wrapper = mount(createTable({
-      onChange: handleChange,
-      dataSource: longData,
-      pagination: {
-        current: 3,
-      },
-    }));
+    const wrapper = mount(
+      createTable({
+        onChange: handleChange,
+        dataSource: longData,
+        pagination: {
+          current: 3,
+        },
+      }),
+    );
     expect(wrapper.find('.ant-pagination-item-active').text()).toBe('3');
     const dropdownWrapper = getDropdownWrapper(wrapper);
 
